@@ -3,35 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игра: Расставь реплики по порядку</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
+    <title>Игра с репликами</title>
 </head>
 <body>
+    <h1>Игра с репликами</h1>
     <div class="container">
-        <h1>Расставь реплики по порядку</h1>
-
-        <div class="game-area">
-            <div class="source-area" id="sourceArea">
-                <!-- Реплики будут добавлены сюда JavaScript'ом -->
-            </div>
-
-            <div class="target-area" id="targetArea">
-                <!-- Место для перетаскивания реплик -->
-            </div>
+        <div class="original">
+            <div draggable="true" class="replica">Здра́вствуй!</div>
+            <div draggable="true" class="replica">Приве́т!</div>
+            <div draggable="true" class="replica">Дава́й познако́мимся, меня́ зову́т Влад. Как тебя́ зову́т?</div>
+            <div draggable="true" class="replica">Меня́ зову́т Ка́тя.</div>
+            <div draggable="true" class="replica">Прия́тно познако́миться.</div>
+            <div draggable="true" class="replica">И мне о́чень прия́тно.</div>
+            <div draggable="true" class="replica">Ка́тя, ско́лько тебе́ лет?</div>
+            <div draggable="true" class="replica">Мне 21, а тебе́?</div>
+            <div draggable="true" class="replica">Мне 20.</div>
+            <div draggable="true" class="replica">Влад, отку́да ты?</div>
+            <div draggable="true" class="replica">Я из Биробиджа́на, а ты?</div>
+            <div draggable="true" class="replica">Я из Владивосто́ка.</div>
         </div>
-
-        <div class="result-area" id="resultArea">
-            <!-- Здесь будет отображаться результат -->
-        </div>
-
-        <button id="resetButton">Начать заново</button>
-
-         <div class="original-order" id="originalOrder">
-            <h2>Правильный порядок:</h2>
-            <ul id="orderList">
-            </ul>
-        </div>
+        <div class="target" id="target"></div>
     </div>
+    <button id="check">Проверить</button>
+    <button id="reset">Заново</button>
+    <div id="result"></div>
 
     <script src="script.js"></script>
 </body>

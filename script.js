@@ -159,9 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
-
-        const isCorrect = targetPhrases.every((phrase, index) => phrase === phrases[index]);
-        resultDiv.textContent = isCorrect ? "Всё правильно!" : "Есть ошибки!";
     });
 
     // Кнопка "Заново"

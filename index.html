@@ -3,30 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игра: Диалог</title>
+    <title>Игра: Расставь реплики</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div class="container">
-        <h1>Составь диалог</h1>
-
+        <h1>Расставь реплики в правильном порядке</h1>
         <div class="game-area">
-            <div class="source-area" id="source-area">
-                <!-- Реплики будут вставляться сюда -->
+            <div id="sourceArea" class="area">
+                <h2>Реплики:</h2>
             </div>
-
-            <div class="target-area" id="target-area">
-                <!-- Сюда нужно перетаскивать реплики -->
+            <div id="targetArea" class="area">
+                <h2>Тут будет порядок:</h2>
             </div>
         </div>
-
-        <button id="check-button">Проверить</button>
-        <button id="reset-button">Заново</button>
-
-        <div id="result"></div>
+        <div class="controls">
+            <button id="checkButton">Проверить</button>
+            <button id="resetButton">Заново</button>
+        </div>
+        <div id="result" class="result"></div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,11 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const sourceArea = document.getElementById('source-area');
-    const targetArea = document.getElementById('target-area');
-    const checkButton = document.getElementById('check-button');
-    const resetButton = document.getElementById('reset-button');
-    const resultDiv = document.getElementById('result');
-
-    const dialogLines = [
+    const phrases = [
         "Здра́вствуй!",
         "Приве́т!",
         "Дава́й познако́мимся, меня́ зову́т Влад. Как тебя́ зову́т?",
@@ -20,140 +14,141 @@ document.addEventListener('DOMContentLoaded', () => {
         "Я из Владивосто́ка."
     ];
 
-    let shuffledLines = [...dialogLines].sort(() => Math.random() - 0.5);
+    const sourceArea = document.getElementById('sourceArea');
+    const targetArea = document.getElementById('targetArea');
+    const checkButton = document.getElementById('checkButton');
+    const resetButton = document.getElementById('resetButton');
+    const resultDiv = document.getElementById('result');
 
-    // Функция для создания элемента реплики
-    function createDialogItem(text) {
-        const item = document.createElement('div');
-        item.classList.add('dialog-item');
-        item.textContent = text;
-        item.draggable = true; // Для десктопа
-
-        // Обработчики для touch-событий (смартфоны)
-        item.addEventListener('touchstart', touchStart);
-        item.addEventListener('touchmove', touchMove);
-        item.addEventListener('touchend', touchEnd);
-        item.addEventListener('dragstart', dragStart); // Для десктопа
-
-        return item;
-    }
-
-    // Заполнение sourceArea репликами
-    shuffledLines.forEach(line => {
-        const item = createDialogItem(line);
-        sourceArea.appendChild(item);
-    });
-
-    // --- Drag and Drop для десктопа ---
     let draggedItem = null;
+    let touchTimeout;
 
-    function dragStart(event) {
-        draggedItem = event.target;
+    // Функция для перемешивания массива (Fisher-Yates shuffle)
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
     }
 
-    targetArea.addEventListener('dragover', (event) => {
-        event.preventDefault(); // Разрешаем перетаскивание
+    // Инициализация игры: создание и отображение реплик в случайном порядке
+    function initializeGame() {
+        sourceArea.innerHTML = ''; // Очищаем перед повторной инициализацией
+        targetArea.innerHTML = '';  // Очищаем целевую область
+        resultDiv.textContent = ''; // Очищаем результаты
+
+        const shuffledPhrases = [...phrases]; // создаем новую копию массива
+        shuffleArray(shuffledPhrases);
+
+        shuffledPhrases.forEach(phraseText => {
+            const phrase = document.createElement('div');
+            phrase.classList.add('phrase');
+            phrase.textContent = phraseText;
+            phrase.draggable = true;
+            phrase.dataset.originalArea = 'source'; // Помечаем, где фраза изначально находилась
+
+            // Добавляем возможность очистки подсветки (красного/зеленого)
+            phrase.clearHighlight = function() {
+                this.classList.remove('correct', 'incorrect');
+            }
+
+            // Обработчики событий для Drag and Drop
+            phrase.addEventListener('dragstart', (e) => {
+                draggedItem = e.target;
+                e.target.classList.add('dragging');
+            });
+
+            phrase.addEventListener('dragend', (e) => {
+                e.target.classList.remove('dragging');
+                draggedItem = null;
+            });
+            phrase.addEventListener('dblclick', handleDoubleClick);
+
+
+            sourceArea.appendChild(phrase);
+        });
+    }
+
+    // Обработчики событий для Drop Area
+    targetArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
     });
 
-    targetArea.addEventListener('drop', (event) => {
-        event.preventDefault();
-        if (draggedItem) {
+    targetArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        if (draggedItem && draggedItem.dataset.originalArea === 'source') {
             targetArea.appendChild(draggedItem);
-            draggedItem = null;
+            draggedItem.dataset.originalArea = 'target'; // Обновляем местоположение
+            draggedItem.clearHighlight(); // Add this line!
         }
     });
 
-    sourceArea.addEventListener('dragover', (event) => {
-        event.preventDefault();
+    sourceArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
     });
 
-    sourceArea.addEventListener('drop', (event) => {
-        event.preventDefault();
-        if (draggedItem) {
+    sourceArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        if (draggedItem && draggedItem.dataset.originalArea === 'target') {
             sourceArea.appendChild(draggedItem);
-            draggedItem = null;
+            draggedItem.dataset.originalArea = 'source'; // Обновляем местоположение
+            draggedItem.clearHighlight(); // Add this line!
         }
     });
 
-    // --- Touch Events для смартфонов ---
-    let touchStartPos = null;
-    let movingItem = null;
-
-    function touchStart(event) {
-        movingItem = event.target;
-        touchStartPos = {
-            x: event.touches[0].clientX,
-            y: event.touches[0].clientY
-        };
-    }
-
-    function touchMove(event) {
-        if (!movingItem || !touchStartPos) return;
-
-        const x = event.touches[0].clientX;
-        const y = event.touches[0].clientY;
-
-        movingItem.style.position = 'absolute';
-        movingItem.style.left = (x - touchStartPos.x) + 'px';
-        movingItem.style.top = (y - touchStartPos.y) + 'px';
-    }
-
-    function touchEnd(event) {
-        if (!movingItem) return;
-
-        const x = event.changedTouches[0].clientX;
-        const y = event.changedTouches[0].clientY;
-
-        let targetElement = document.elementFromPoint(x, y);
-
-        // Находим ближайший родительский элемент с id "source-area" или "target-area"
-        while (targetElement && targetElement.id !== 'source-area' && targetElement.id !== 'target-area') {
-            targetElement = targetElement.parentNode;
-        }
-
-        if (targetElement && (targetElement.id === 'source-area' || targetElement.id === 'target-area')) {
-            targetElement.appendChild(movingItem);
-        } else {
-            // Если не попали в допустимую зону, возвращаем элемент на исходную позицию
-            // (Нужно хранить исходную позицию, чтобы правильно вернуть)
-            //  movingItem.style.position = 'static'; // Или как было изначально
-        }
-
-        movingItem.style.position = 'static';
-        movingItem = null;
-        touchStartPos = null;
-    }
-
-    // --- Проверка и Сброс ---
-    checkButton.addEventListener('click', () => {
-        const targetItems = Array.from(targetArea.querySelectorAll('.dialog-item'));
-        let correctCount = 0;
-
-        targetItems.forEach((item, index) => {
-            if (item.textContent === dialogLines[index]) {
-                item.classList.add('correct');
-                item.classList.remove('incorrect');
-                correctCount++;
+    function handleDoubleClick(e) {
+        const phrase = e.target;
+        if (phrase.classList.contains('phrase')) {
+            // Определяем текущее местоположение и перемещаем в обратную сторону
+            if (phrase.dataset.originalArea === 'source') {
+                targetArea.appendChild(phrase);
+                phrase.dataset.originalArea = 'target';
             } else {
-                item.classList.add('incorrect');
-                item.classList.remove('correct');
+                sourceArea.appendChild(phrase);
+                phrase.dataset.originalArea = 'source';
+            }
+            phrase.clearHighlight();
+        }
+    }
+
+    // Проверка правильности
+    checkButton.addEventListener('click', () => {
+        const targetPhrases = Array.from(targetArea.children).map(item => item.textContent);
+
+        // Добавляем проверку, что хоть что-то перетащили
+        if (targetPhrases.length === 0) {
+            resultDiv.textContent = "Перетащите реплики в правую область!";
+            // Сбрасываем классы correct/incorrect, чтобы они не оставались от предыдущих проверок
+            targetArea.childNodes.forEach(node => {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    node.classList.remove('correct', 'incorrect');
+                }
+            });
+            return; // Выходим из функции, чтобы не проверять пустую область
+        }
+
+
+        targetArea.childNodes.forEach((node, index) => {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                if (node.textContent === phrases[index]) {
+                    node.classList.add('correct');
+                    node.classList.remove('incorrect');
+                } else {
+                    node.classList.add('incorrect');
+                    node.classList.remove('correct');
+                }
             }
         });
 
-        resultDiv.textContent = `Правильных реплик: ${correctCount} из ${dialogLines.length}`;
+        const isCorrect = targetPhrases.every((phrase, index) => phrase === phrases[index]);
+        resultDiv.textContent = isCorrect ? "Всё правильно!" : "Есть ошибки!";
     });
 
+    // Кнопка "Заново"
     resetButton.addEventListener('click', () => {
-        sourceArea.innerHTML = '';
-        targetArea.innerHTML = '';
-
-        shuffledLines = [...dialogLines].sort(() => Math.random() - 0.5);
-
-        shuffledLines.forEach(line => {
-            const item = createDialogItem(line);
-            sourceArea.appendChild(item);
-        });
-
-        resultDiv.textContent = '';
+        initializeGame();
     });
+
+    // Запуск игры при загрузке страницы
+    initializeGame();
 });

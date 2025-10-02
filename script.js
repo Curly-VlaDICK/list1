@@ -21,7 +21,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultDiv = document.getElementById('result');
 
     let draggedItem = null;
-    let touchTimeout;
+    let lastTouchTime = 0;
+    const doubleTapDelay = 300; // Миллисекунды
+
+    // Функция для определения, произошло ли двойное касание
+    function isDoubleTap() {
+        const now = new Date().getTime();
+        const timeSinceLastTouch = now - lastTouchTime;
+
+        if (timeSinceLastTouch < doubleTapDelay && timeSinceLastTouch > 0) {
+            return true;
+        }
+        lastTouchTime = now;
+        return false;
+    }
 
     // Функция для перемешивания массива (Fisher-Yates shuffle)
     function shuffleArray(array) {
@@ -62,8 +75,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.target.classList.remove('dragging');
                 draggedItem = null;
             });
-            phrase.addEventListener('dblclick', handleDoubleClick);
 
+            // Обработчик одинарного касания
+            phrase.addEventListener('touchstart', (e) => {
+                if (isDoubleTap()) {
+                    handleDoubleClick(e);
+                }
+            });
 
             sourceArea.appendChild(phrase);
         });
@@ -109,6 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             phrase.clearHighlight();
         }
+        e.preventDefault(); // Предотвращаем возможное поведение браузера по умолчанию
+        return false;
     }
 
     // Проверка правильности

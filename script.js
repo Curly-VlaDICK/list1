@@ -4,7 +4,6 @@ const checkButton = document.getElementById('check');
 const resetButton = document.getElementById('reset');
 const resultDiv = document.getElementById('result');
 
-// Предустановленный правильный порядок реплик
 const correctOrder = [
     "Здра́вствуй!",
     "Приве́т!",
@@ -20,15 +19,50 @@ const correctOrder = [
     "Я из Владивосто́ка."
 ];
 
+let draggingElement = null;
+
 replicas.forEach(replica => {
     replica.addEventListener('dragstart', dragStart);
+    replica.addEventListener('touchstart', touchStart);
     target.addEventListener('dragover', dragOver);
     target.addEventListener('drop', drop);
 });
 
+// Для перетаскивания мышью
 function dragStart(e) {
-    e.dataTransfer.setData('text/plain', e.target.textContent);
-    e.target.classList.add('dragging');
+    draggingElement = e.target;
+    e.dataTransfer.setData('text/plain', draggingElement.textContent);
+    draggingElement.classList.add('dragging');
+}
+
+// Для перетаскивания на сенсорных экранах
+function touchStart(e) {
+    const touch = e.touches[0];
+    draggingElement = e.target;
+
+    const newReplica = document.createElement('div');
+    newReplica.textContent = draggingElement.textContent;
+    newReplica.classList.add('replica');
+    newReplica.draggable = true;
+
+    target.appendChild(newReplica);
+    draggingElement.remove();
+  
+    // Для переноса с помощью touch
+    newReplica.style.position = 'absolute';
+    newReplica.style.left = `${touch.clientX - 100}px`;
+    newReplica.style.top = `${touch.clientY - 20}px`;
+
+    newReplica.addEventListener('touchmove', function (ev) {
+        const touchMove = ev.touches[0];
+        newReplica.style.left = `${touchMove.clientX - 100}px`;
+        newReplica.style.top = `${touchMove.clientY - 20}px`;
+    });
+
+    newReplica.addEventListener('touchend', function () {
+        target.appendChild(newReplica);
+        newReplica.style.position = 'static';
+    });
 }
 
 function dragOver(e) {
@@ -44,8 +78,8 @@ function drop(e) {
     newReplica.draggable = true;
 
     newReplica.addEventListener('dragstart', dragStart);
+
     target.appendChild(newReplica);
-    e.dataTransfer.clearData();
 }
 
 checkButton.addEventListener('click', checkOrder);

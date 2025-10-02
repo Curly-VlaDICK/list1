@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultMessage = document.getElementById('result-message');
 
     let draggablePhrases = [];
-    let currentlyDragging = null;
+    let currentlyDragging = null; //  Отслеживает перетаскиваемый элемент
 
     function populatePhraseBank() {
         const shuffledPhrases = [...phrases].sort(() => Math.random() - 0.5);
@@ -37,41 +37,47 @@ document.addEventListener('DOMContentLoaded', () => {
                 event.dataTransfer.setData('text', phraseText);
                 event.dataTransfer.setData('source', 'phrase-bank');
                 currentlyDragging = phraseElement;
-                phraseElement.classList.remove('correct', 'incorrect'); // Сбрасываем классы
             });
 
-            phraseElement.addEventListener('dragend', () => {
+             phraseElement.addEventListener('dragend', () => {
                 currentlyDragging = null;
             });
 
             // --- Touch Events (Mobile) ---
             phraseElement.addEventListener('touchstart', (event) => {
-                event.preventDefault();
+                event.preventDefault();  // Предотвращаем прокрутку страницы
                 currentlyDragging = phraseElement;
-                phraseElement.classList.remove('correct', 'incorrect'); // Сбрасываем классы
+
             });
 
             phraseElement.addEventListener('touchmove', (event) => {
-                event.preventDefault();
+                event.preventDefault(); //  Предотвращаем прокрутку
                 if (!currentlyDragging) return;
 
+                // Находим элемент под пальцем
                 const touch = event.touches[0];
                 const target = document.elementFromPoint(touch.clientX, touch.clientY);
 
+                // Перемещаем элемент, если он находится над phrase-bank или sequence-area
                 if (target === phraseBank || target === sequenceArea || target.parentNode === phraseBank || target.parentNode === sequenceArea) {
+                    // Опустошаем контейнер (чтобы можно было вставить элемент в нужное место)
                     if(target.children.length > 0)
                         target.children[0].innerHTML = "";
 
+                    //Устанавливаем курсор перед целью
                     if((touch.clientX - target.offsetLeft) < 0)
                         phraseBank.parentNode.insertBefore(currentlyDragging, target);
                     else
                         phraseBank.parentNode.insertBefore(currentlyDragging, target.nextSibling);
+
                 }
+
             });
 
             phraseElement.addEventListener('touchend', () => {
                 currentlyDragging = null;
             });
+
 
             phraseBank.appendChild(phraseElement);
             draggablePhrases.push(phraseElement);
@@ -112,6 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 allCorrect = false;
             }
         });
+
+        resultMessage.textContent = allCorrect ? "Правильно!" : "Неправильно, попробуйте еще раз!";
     }
 
     function resetGame() {

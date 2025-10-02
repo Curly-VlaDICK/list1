@@ -3,30 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Перетаскивание реплик</title>
     <link rel="stylesheet" href="styles.css">
-    <title>Игра с репликами</title>
 </head>
 <body>
-    <h1>Игра с репликами</h1>
-    <div class="container">
-        <div class="original">
-            <div draggable="true" class="replica">Здра́вствуй!</div>
-            <div draggable="true" class="replica">Приве́т!</div>
-            <div draggable="true" class="replica">Дава́й познако́мимся, меня́ зову́т Влад. Как тебя́ зову́т?</div>
-            <div draggable="true" class="replica">Меня́ зову́т Ка́тя.</div>
-            <div draggable="true" class="replica">Прия́тно познако́миться.</div>
-            <div draggable="true" class="replica">И мне о́чень прия́тно.</div>
-            <div draggable="true" class="replica">Ка́тя, ско́лько тебе́ лет?</div>
-            <div draggable="true" class="replica">Мне 21, а тебе́?</div>
-            <div draggable="true" class="replica">Мне 20.</div>
-            <div draggable="true" class="replica">Влад, отку́да ты?</div>
-            <div draggable="true" class="replica">Я из Биробиджа́на, а ты?</div>
-            <div draggable="true" class="replica">Я из Владивосто́ка.</div>
-        </div>
-        <div class="target" id="target"></div>
+    <div class="replicas">
+        <div class="replica" draggable="true">Здра́вствуй!</div>
+        <div class="replica" draggable="true">Приве́т!</div>
+        <div class="replica" draggable="true">Дава́й познако́мимся, меня́ зову́т Влад. Как тебя́ зову́т?</div>
+        <div class="replica" draggable="true">Меня́ зову́т Ка́тя.</div>
+        <div class="replica" draggable="true">Прия́тно познако́миться.</div>
+        <div class="replica" draggable="true">И мне о́чень прия́тно.</div>
+        <div class="replica" draggable="true">Ка́тя, ско́лько тебе́ лет?</div>
+        <div class="replica" draggable="true">Мне 21, а тебе́?</div>
+        <div class="replica" draggable="true">Мне 20.</div>
+        <div class="replica" draggable="true">Влад, отку́да ты?</div>
+        <div class="replica" draggable="true">Я из Биробиджа́на, а ты?</div>
+        <div class="replica" draggable="true">Я из Владивосто́ка.</div>
     </div>
+
+    <div id="target" class="target"></div>
     <button id="check">Проверить</button>
-    <button id="reset">Заново</button>
+    <button id="reset">Сбросить</button>
     <div id="result"></div>
 
     <script src="script.js"></script>

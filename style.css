@@ -14,40 +14,31 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 80%;
-    max-width: 800px;
+    width: 90%;
+    max-width: 600px;
 }
 
 h1 {
     text-align: center;
     color: #333;
+    font-size: 1.5em;
 }
 
 .game-wrapper {
     display: flex;
-    gap: 20px;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.phrase-bank {
-    flex: 1;
+.phrase-area {  /* Общие стили для phrase-bank и sequence-area */
     border: 2px dashed #ccc;
     padding: 10px;
     border-radius: 5px;
-    min-height: 200px;
-    display: flex;          /*  Для вертикального размещения */
-    flex-direction: column; /*  Для вертикального размещения */
-    gap: 5px;               /*  Отступы между фразами */
-}
-
-.sequence-area {
-    flex: 1;
-    border: 2px dashed #ccc;
-    padding: 10px;
-    border-radius: 5px;
-    min-height: 200px;
+    min-height: 100px;
     display: flex;
-    flex-direction: column; /*  Вертикальное расположение */
-    gap: 5px; /* Небольшой отступ между фразами */
+    flex-direction: column;
+    gap: 5px;
+    width: 100%; /* Важно: Задаем ширину в процентах */
 }
 
 .phrase {
@@ -56,7 +47,8 @@ h1 {
     border: 1px solid #ddd;
     border-radius: 4px;
     cursor: grab;
-    margin-bottom: 0;        /* Убрал отступ снизу, т.к. задается в phrase-bank и sequence area*/
+    margin-bottom: 0;
+    touch-action: none;
 }
 
 .phrase:active {
@@ -64,11 +56,16 @@ h1 {
 }
 
 .phrase.correct {
-    background-color: #c8e6c9; /*  Зеленый для правильных */
+    background-color: #c8e6c9;
 }
 
 .phrase.incorrect {
-    background-color: #ffcdd2; /*  Красный для неправильных */
+    background-color: #ffcdd2;
+}
+
+/* Класс для сброса цвета фона */
+.phrase.reset {
+    background-color: #e9e9e9; /* Возвращаем исходный цвет */
 }
 
 #check-button, #reset-button {
@@ -78,8 +75,10 @@ h1 {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    display: block;  /*  Чтобы кнопки были на отдельных строках */
-    margin: 10px auto; /*  Центрирование кнопок */
+    display: block;
+    margin: 10px auto;
+    width: 80%;
+    max-width: 200px;
 }
 
 #check-button:hover, #reset-button:hover {
@@ -90,4 +89,24 @@ h1 {
     text-align: center;
     font-weight: bold;
     margin-top: 10px;
+}
+
+/* Медиа-запрос для экранов шире 600px */
+@media (min-width: 600px) {
+    .game-wrapper {
+        flex-direction: row;
+    }
+    .container {
+        width: 80%;
+        max-width: 800px;
+    }
+    h1 {
+        font-size: 2em;
+    }
+
+    #check-button, #reset-button {
+        width: auto;
+        max-width: none;
+        margin: 10px;
+    }
 }

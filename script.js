@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const resetButton = document.getElementById('reset-button');
     const resultMessage = document.getElementById('result-message');
 
-    let draggablePhrases = []; //  Храним элементы фраз, чтобы можно было их вернуть
+    let draggablePhrases = [];
+    let currentlyDragging = null;
 
     function populatePhraseBank() {
         const shuffledPhrases = [...phrases].sort(() => Math.random() - 0.5);
@@ -31,9 +32,45 @@ document.addEventListener('DOMContentLoaded', () => {
             phraseElement.classList.add('phrase');
             phraseElement.draggable = true;
 
+            // --- Drag and Drop (Desktop) ---
             phraseElement.addEventListener('dragstart', (event) => {
                 event.dataTransfer.setData('text', phraseText);
-                event.dataTransfer.setData('source', 'phrase-bank'); //  Указываем, откуда элемент
+                event.dataTransfer.setData('source', 'phrase-bank');
+                currentlyDragging = phraseElement;
+                phraseElement.classList.remove('correct', 'incorrect'); // Сбрасываем классы
+            });
+
+            phraseElement.addEventListener('dragend', () => {
+                currentlyDragging = null;
+            });
+
+            // --- Touch Events (Mobile) ---
+            phraseElement.addEventListener('touchstart', (event) => {
+                event.preventDefault();
+                currentlyDragging = phraseElement;
+                phraseElement.classList.remove('correct', 'incorrect'); // Сбрасываем классы
+            });
+
+            phraseElement.addEventListener('touchmove', (event) => {
+                event.preventDefault();
+                if (!currentlyDragging) return;
+
+                const touch = event.touches[0];
+                const target = document.elementFromPoint(touch.clientX, touch.clientY);
+
+                if (target === phraseBank || target === sequenceArea || target.parentNode === phraseBank || target.parentNode === sequenceArea) {
+                    if(target.children.length > 0)
+                        target.children[0].innerHTML = "";
+
+                    if((touch.clientX - target.offsetLeft) < 0)
+                        phraseBank.parentNode.insertBefore(currentlyDragging, target);
+                    else
+                        phraseBank.parentNode.insertBefore(currentlyDragging, target.nextSibling);
+                }
+            });
+
+            phraseElement.addEventListener('touchend', () => {
+                currentlyDragging = null;
             });
 
             phraseBank.appendChild(phraseElement);
@@ -50,22 +87,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const phraseText = event.dataTransfer.getData('text');
         const source = event.dataTransfer.getData('source');
 
-        //  Нужно найти элемент, соответствующий тексту, чтобы его переместить
-
         const phraseElement = draggablePhrases.find(el => el.textContent === phraseText);
 
         if (phraseElement) {
-            if (event.target === phraseBank || event.target.parentNode === phraseBank)
-             {
-                // Вернуть в phrase-bank
+            if (event.target === phraseBank || event.target.parentNode === phraseBank) {
                 phraseBank.appendChild(phraseElement);
-                event.dataTransfer.setData('source', 'phrase-bank');
-             }
-             else{
-                // Переместить в sequence-area
+            } else {
                 sequenceArea.appendChild(phraseElement);
-                event.dataTransfer.setData('source', 'sequence-area');
-             }
+            }
         }
     }
 
@@ -86,21 +115,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function resetGame() {
-        //  Возвращаем все фразы в банк фраз
         draggablePhrases.forEach(phraseElement => {
             phraseBank.appendChild(phraseElement);
-            phraseElement.classList.remove('correct', 'incorrect'); //  Удаляем классы
+            phraseElement.classList.remove('correct', 'incorrect');
         });
 
-        //  Очищаем sequence area
+        // Очищаем sequence area
         sequenceArea.innerHTML = '';
 
-        //  Перемешиваем фразы в банке
         phraseBank.innerHTML = '';
-        draggablePhrases = [];  // Очищаем массив
+        draggablePhrases = [];
         populatePhraseBank();
 
-        resultMessage.textContent = ''; //  Очищаем сообщение
+        resultMessage.textContent = '';
     }
 
     phraseBank.addEventListener('dragover', allowDrop);

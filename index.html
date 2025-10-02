@@ -3,27 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Игра: Расставь фразы по порядку</title>
+    <title>Игра: Расставь реплики по порядку</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Расставь фразы по порядку</h1>
+        <h1>Расставь реплики по порядку</h1>
 
-        <div class="game-wrapper">
-            <div class="phrase-bank phrase-area" id="phrase-bank">
-                <!-- Фразы будут добавлены сюда JavaScript -->
+        <div class="game-area">
+            <div class="source-area" id="sourceArea">
+                <!-- Реплики будут добавлены сюда JavaScript'ом -->
             </div>
 
-            <div class="sequence-area phrase-area" id="sequence-area">
-                <!-- Место для перетаскивания фраз -->
+            <div class="target-area" id="targetArea">
+                <!-- Место для перетаскивания реплик -->
             </div>
         </div>
 
-        <button id="check-button">Проверить</button>
-        <button id="reset-button">Заново</button>
+        <div class="result-area" id="resultArea">
+            <!-- Здесь будет отображаться результат -->
+        </div>
 
-        <div id="result-message" class="result"></div>
+        <button id="resetButton">Начать заново</button>
+
+         <div class="original-order" id="originalOrder">
+            <h2>Правильный порядок:</h2>
+            <ul id="orderList">
+            </ul>
+        </div>
     </div>
 
     <script src="script.js"></script>

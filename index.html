@@ -3,29 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Перетаскивание реплик</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Игра: Диалог</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="replicas">
-        <div class="replica" draggable="true">Здра́вствуй!</div>
-        <div class="replica" draggable="true">Приве́т!</div>
-        <div class="replica" draggable="true">Дава́й познако́мимся, меня́ зову́т Влад. Как тебя́ зову́т?</div>
-        <div class="replica" draggable="true">Меня́ зову́т Ка́тя.</div>
-        <div class="replica" draggable="true">Прия́тно познако́миться.</div>
-        <div class="replica" draggable="true">И мне о́чень прия́тно.</div>
-        <div class="replica" draggable="true">Ка́тя, ско́лько тебе́ лет?</div>
-        <div class="replica" draggable="true">Мне 21, а тебе́?</div>
-        <div class="replica" draggable="true">Мне 20.</div>
-        <div class="replica" draggable="true">Влад, отку́да ты?</div>
-        <div class="replica" draggable="true">Я из Биробиджа́на, а ты?</div>
-        <div class="replica" draggable="true">Я из Владивосто́ка.</div>
-    </div>
 
-    <div id="target" class="target"></div>
-    <button id="check">Проверить</button>
-    <button id="reset">Сбросить</button>
-    <div id="result"></div>
+    <div class="container">
+        <h1>Составь диалог</h1>
+
+        <div class="game-area">
+            <div class="source-area" id="source-area">
+                <!-- Реплики будут вставляться сюда -->
+            </div>
+
+            <div class="target-area" id="target-area">
+                <!-- Сюда нужно перетаскивать реплики -->
+            </div>
+        </div>
+
+        <button id="check-button">Проверить</button>
+        <button id="reset-button">Заново</button>
+
+        <div id="result"></div>
+    </div>
 
     <script src="script.js"></script>
 </body>

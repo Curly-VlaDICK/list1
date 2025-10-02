@@ -1,57 +1,11 @@
-const replicas = document.querySelectorAll('.replica');
-const target = document.getElementById('target');
-const checkButton = document.getElementById('check');
-const resetButton = document.getElementById('reset');
-const resultDiv = document.getElementById('result');
+document.addEventListener('DOMContentLoaded', () => {
+    const sourceArea = document.getElementById('source-area');
+    const targetArea = document.getElementById('target-area');
+    const checkButton = document.getElementById('check-button');
+    const resetButton = document.getElementById('reset-button');
+    const resultDiv = document.getElementById('result');
 
-let draggingElement = null;
-
-// Добавление обработчиков события для перетаскивания
-replicas.forEach(replica => {
-    replica.addEventListener('dragstart', dragStart);
-    replica.addEventListener('dragend', dragEnd);
-});
-
-target.addEventListener('dragover', dragOver);
-target.addEventListener('drop', drop);
-
-function dragStart(e) {
-    draggingElement = e.target;
-    e.dataTransfer.setData('text/plain', draggingElement.textContent);
-    setTimeout(() => {
-        draggingElement.classList.add('invisible');
-    }, 0);
-}
-
-function dragEnd() {
-    draggingElement.classList.remove('invisible');
-}
-
-function dragOver(e) {
-    e.preventDefault();
-}
-
-function drop(e) {
-    e.preventDefault();
-    const text = e.dataTransfer.getData('text/plain');
-    const newReplica = document.createElement('div');
-    newReplica.textContent = text;
-    newReplica.classList.add('replica');
-    newReplica.draggable = true;
-
-    newReplica.addEventListener('dragstart', dragStart);
-    newReplica.addEventListener('dragend', dragEnd);
-
-    target.appendChild(newReplica);
-}
-
-// Проверка правильности порядка реплик
-checkButton.addEventListener('click', checkOrder);
-resetButton.addEventListener('click', resetGame);
-
-function checkOrder() {
-    const targetReplicas = Array.from(target.children).map(child => child.textContent);
-    const correctOrder = [
+    const dialogLines = [
         "Здра́вствуй!",
         "Приве́т!",
         "Дава́й познако́мимся, меня́ зову́т Влад. Как тебя́ зову́т?",
@@ -66,28 +20,87 @@ function checkOrder() {
         "Я из Владивосто́ка."
     ];
 
-    target.childNodes.forEach((child, index) => {
-        if (child.textContent === correctOrder[index]) {
-            child.classList.add('correct');
-        } else {
-            child.classList.add('incorrect');
+    let shuffledLines = [...dialogLines].sort(() => Math.random() - 0.5);
+
+    // Функция для создания элемента реплики
+    function createDialogItem(text) {
+        const item = document.createElement('div');
+        item.classList.add('dialog-item');
+        item.textContent = text;
+        item.draggable = true;
+        item.addEventListener('dragstart', dragStart);
+        return item;
+    }
+
+    // Заполнение sourceArea репликами
+    shuffledLines.forEach(line => {
+        const item = createDialogItem(line);
+        sourceArea.appendChild(item);
+    });
+
+    let draggedItem = null;
+
+    function dragStart(event) {
+        draggedItem = event.target;
+    }
+
+    targetArea.addEventListener('dragover', (event) => {
+        event.preventDefault(); // Разрешаем перетаскивание
+    });
+
+    targetArea.addEventListener('drop', (event) => {
+        event.preventDefault();
+        if (draggedItem) {
+            targetArea.appendChild(draggedItem);
+            draggedItem = null;
         }
     });
 
-    if (targetReplicas.join('') === correctOrder.join('')) {
-        resultDiv.textContent = "Поздравляем! Все реплики на своих местах.";
-    } else {
-        resultDiv.textContent = "Некоторые реплики расставлены неправильно. Исправьте их.";
-    }
-}
-
-function resetGame() {
-    target.innerHTML = '';
-    resultDiv.textContent = '';
-    Array.from(replicas).forEach(replica => {
-        const clone = replica.cloneNode(true);
-        clone.addEventListener('dragstart', dragStart);
-        clone.addEventListener('dragend', dragEnd);
-        target.appendChild(clone);
+    sourceArea.addEventListener('dragover', (event) => {
+        event.preventDefault();
     });
-}
+
+    sourceArea.addEventListener('drop', (event) => {
+        event.preventDefault();
+        if (draggedItem) {
+            sourceArea.appendChild(draggedItem);
+            draggedItem = null;
+        }
+    });
+
+    checkButton.addEventListener('click', () => {
+        const targetItems = Array.from(targetArea.querySelectorAll('.dialog-item'));
+        let correctCount = 0;
+
+        targetItems.forEach((item, index) => {
+            if (item.textContent === dialogLines[index]) {
+                item.classList.add('correct');
+                item.classList.remove('incorrect');
+                correctCount++;
+            } else {
+                item.classList.add('incorrect');
+                item.classList.remove('correct');
+            }
+        });
+
+        resultDiv.textContent = `Правильных реплик: ${correctCount} из ${dialogLines.length}`;
+    });
+
+    resetButton.addEventListener('click', () => {
+       // Очищаем обе области
+       sourceArea.innerHTML = '';
+       targetArea.innerHTML = '';
+
+       // Перемешиваем реплики заново
+       shuffledLines = [...dialogLines].sort(() => Math.random() - 0.5);
+
+       // Заполняем sourceArea перемешанными репликами
+       shuffledLines.forEach(line => {
+           const item = createDialogItem(line);
+           sourceArea.appendChild(item);
+       });
+
+       // Очищаем результаты
+       resultDiv.textContent = '';
+   });
+});
